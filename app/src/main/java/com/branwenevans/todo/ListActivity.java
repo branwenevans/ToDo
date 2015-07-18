@@ -26,7 +26,7 @@ public class ListActivity extends Activity {
 
     private RecyclerView recyclerView;
 
-    private ArrayList<String> dataset;
+    private ArrayList<ListItem> dataset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +45,9 @@ public class ListActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            String message = data.getStringExtra(AddActivity.EXTRA_ADDED_ITEM);
-            if (!message.isEmpty()) {
-                dataset.add(message);
+            String newLabel = data.getStringExtra(AddActivity.EXTRA_ADDED_ITEM);
+            if (!newLabel.isEmpty()) {
+                dataset.add(new ListItem(newLabel));
                 adapter.notifyDataSetChanged();
             }
         }
@@ -61,16 +61,19 @@ public class ListActivity extends Activity {
 
 
     public void addItem(View view) {
-        Intent intent = new Intent(this, AddActivity.class);
-        startActivityForResult(intent, REQUEST_CODE);
+        Intent addItemIntent = new Intent(this, AddActivity.class);
+        startActivityForResult(addItemIntent, REQUEST_CODE);
     }
 
-    public void tickItem(View view) {
-        //TODO: mark as done rather than removing
-        deleteItem(view);
+
+    public void taskDone(View view) {
+        int position = recyclerView.getChildPosition((View) view.getParent());
+        ListItem listItem = dataset.get(position);
+        listItem.done();
+        adapter.notifyItemChanged(position);
     }
 
-    public void deleteItem(View view) {
+    public void taskDeleted(View view) {
         int position = recyclerView.getChildPosition((View) view.getParent());
         dataset.remove(position);
         adapter.notifyDataSetChanged();
@@ -80,8 +83,8 @@ public class ListActivity extends Activity {
         FileOutputStream outputStream = null;
         try {
             outputStream = openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE);
-            for (String line : dataset) {
-                outputStream.write(line.getBytes());
+            for (ListItem item : dataset) {
+                outputStream.write(item.getLabel().getBytes());
                 outputStream.write('\n');
             }
             outputStream.close();
@@ -90,15 +93,15 @@ public class ListActivity extends Activity {
         }
     }
 
-    private ArrayList<String> readFromFile() {
-        ArrayList<String> lines = new ArrayList<String>();
+    private ArrayList<ListItem> readFromFile() {
+        ArrayList<ListItem> lines = new ArrayList<ListItem>();
         String line;
         try {
             FileReader reader = new FileReader(getFilePath());
             BufferedReader bufferedReader = new BufferedReader(reader);
 
             while ((line = bufferedReader.readLine()) != null) {
-                lines.add(line);
+                lines.add(new ListItem(line));
             }
         } catch (FileNotFoundException e) {
         } catch (IOException e) {

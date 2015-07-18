@@ -1,5 +1,6 @@
 package com.branwenevans.todo;
 
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,24 +11,24 @@ import java.util.List;
 
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
 
-    private List<String> dataSet;
+    private List<ListItem> dataSet;
 
-    public TodoAdapter(List<String> dataSet) {
+    public TodoAdapter(List<ListItem> dataSet) {
         this.dataSet = dataSet;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_row, parent, false);
-        //TODO: set view options here
-
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.textView.setText(dataSet.get(position));
+        ListItem listItem = dataSet.get(position);
+        holder.textView.setText(listItem.getLabel());
+        holder.textView.getPaint().setStrikeThruText(listItem.isDone());
     }
 
     @Override
