@@ -19,19 +19,6 @@ public class AddActivity extends Activity {
         setContentView(R.layout.activity_add);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
-
-    }
-
     public void sendMessage(View view) {
         Intent intent = new Intent(this, ListActivity.class);
         String message = ((EditText) findViewById(R.id.edit_message)).getText().toString();
