@@ -1,9 +1,11 @@
 package com.branwenevans.todo;
 
 import android.support.v7.widget.RecyclerView;
+import android.transition.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -27,6 +29,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
         ListItem listItem = dataSet.get(position);
         holder.textView.setText(listItem.getLabel());
         holder.textView.getPaint().setStrikeThruText(listItem.isDone());
+        holder.doneLink.setVisibility(listItem.isDone() ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -36,11 +39,14 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView textView;
+        private final TextView textView;
+
+        private final ImageButton doneLink;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.item_text);
+            doneLink = (ImageButton) itemView.findViewById(R.id.item_done);
         }
     }
 }
