@@ -6,7 +6,7 @@
     <string name="title_activity_add">Add a new item</string>
     <string name="file_name">todoList</string>
     <string name="done">Done</string>
-    <string name="todo">To-do</string>
+    <string name="todo">ToDo</string>
     <string name="doneSeparator">-</string>
     <string name="title_action_hide_done">Hide completed tasks</string>
 </resources>
