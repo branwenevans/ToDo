@@ -28,6 +28,8 @@ public class ListActivity extends Activity {
 
     private ArrayList<ListItem> dataSet;
 
+    private boolean showCompletedTasks = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,15 +74,11 @@ public class ListActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_hide_done:
-                toggleShowCompletedTasks();
+                toggleShowCompletedTasks(item);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void toggleShowCompletedTasks() {
-        adapter.toggleShowCompletedTasks();
     }
 
     public void addItem(View view) {
@@ -93,9 +91,18 @@ public class ListActivity extends Activity {
         adapter.taskDone(recyclerView.getChildPosition((View) view.getParent()));
     }
 
+
     public void taskDeleted(View view) {
         adapter.taskDeleted(recyclerView.getChildPosition((View) view.getParent()));
     }
+
+
+    private void toggleShowCompletedTasks(MenuItem item) {
+        showCompletedTasks = !showCompletedTasks;
+        item.setIcon(showCompletedTasks ? R.drawable.ic_action_visibility_off : R.drawable.ic_action_visibility);
+        adapter.toggleShowCompletedTasks();
+    }
+
 
     private void writeToFile() {
         FileOutputStream outputStream;
@@ -112,6 +119,7 @@ public class ListActivity extends Activity {
             //TODO: handle
         }
     }
+
 
     private ArrayList<ListItem> readFromFile() {
         ArrayList<ListItem> lines = new ArrayList<>();
@@ -130,6 +138,7 @@ public class ListActivity extends Activity {
         }
         return lines;
     }
+
 
     private String getFilePath() {
         return getBaseContext().getFilesDir() + "/" + getString(R.string.file_name);

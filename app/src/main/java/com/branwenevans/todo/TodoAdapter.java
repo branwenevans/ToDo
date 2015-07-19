@@ -84,7 +84,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
     }
 
     public void taskDeleted(int position) {
-        dataSet.remove(position);
+        doneItems.remove(dataSet.remove(position));
         notifyItemRemoved(position);
     }
 
