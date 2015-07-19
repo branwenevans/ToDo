@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 public class ListActivity extends Activity {
 
     public static final int REQUEST_CODE = 1;
-
-    private LinearLayoutManager layoutManager;
 
     private TodoAdapter adapter;
 
@@ -34,7 +31,7 @@ public class ListActivity extends Activity {
         setContentView(R.layout.activity_list);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         dataset = readFromFile();
         adapter = new TodoAdapter(dataset);
@@ -80,7 +77,7 @@ public class ListActivity extends Activity {
     }
 
     private void writeToFile() {
-        FileOutputStream outputStream = null;
+        FileOutputStream outputStream;
         try {
             outputStream = openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE);
             for (ListItem item : dataset) {
@@ -96,7 +93,7 @@ public class ListActivity extends Activity {
     }
 
     private ArrayList<ListItem> readFromFile() {
-        ArrayList<ListItem> lines = new ArrayList<ListItem>();
+        ArrayList<ListItem> lines = new ArrayList<>();
         String line;
         try {
             FileReader reader = new FileReader(getFilePath());
