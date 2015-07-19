@@ -85,6 +85,8 @@ public class ListActivity extends Activity {
             outputStream = openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE);
             for (ListItem item : dataset) {
                 outputStream.write(item.getLabel().getBytes());
+                outputStream.write(getString(R.string.doneSeparator).getBytes());
+                outputStream.write(item.isDone() ? getString(R.string.done).getBytes() : getString(R.string.todo).getBytes());
                 outputStream.write('\n');
             }
             outputStream.close();
@@ -101,10 +103,11 @@ public class ListActivity extends Activity {
             BufferedReader bufferedReader = new BufferedReader(reader);
 
             while ((line = bufferedReader.readLine()) != null) {
-                lines.add(new ListItem(line));
+                int separator = line.lastIndexOf(getString(R.string.doneSeparator));
+                String done = line.substring(separator+1);
+                lines.add(new ListItem(line.substring(0, separator-1), getString(R.string.done).equals(done)));
             }
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
+        }catch (IOException e) {
             //TODO: handle
         }
         return lines;

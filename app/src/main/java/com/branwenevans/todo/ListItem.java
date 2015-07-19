@@ -10,6 +10,11 @@ public class ListItem {
         this.label = label;
     }
 
+    public ListItem(String label, boolean done) {
+        this.label = label;
+        this.done = done;
+    }
+
     public String getLabel() {
         return label;
     }
