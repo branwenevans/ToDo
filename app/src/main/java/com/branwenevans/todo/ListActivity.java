@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ListActivity extends Activity {
@@ -25,8 +26,6 @@ public class ListActivity extends Activity {
     private TodoAdapter adapter;
 
     private RecyclerView recyclerView;
-
-    private ArrayList<ListItem> dataSet;
 
     private boolean showCompletedTasks = true;
 
@@ -38,8 +37,7 @@ public class ListActivity extends Activity {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        dataSet = readFromFile();
-        adapter = new TodoAdapter(dataSet);
+        adapter = new TodoAdapter(readFromFile());
         recyclerView.setAdapter(adapter);
     }
 
@@ -49,8 +47,7 @@ public class ListActivity extends Activity {
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             String newLabel = data.getStringExtra(AddActivity.EXTRA_ADDED_ITEM);
             if (!newLabel.isEmpty()) {
-                dataSet.add(new ListItem(newLabel));
-                adapter.notifyDataSetChanged();
+                adapter.addItem(new ListItem(newLabel));
             }
         }
     }
@@ -108,7 +105,7 @@ public class ListActivity extends Activity {
         FileOutputStream outputStream;
         try {
             outputStream = openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE);
-            for (ListItem item : dataSet) {
+            for (ListItem item : adapter.getAllItems()) {
                 outputStream.write(item.getLabel().getBytes());
                 outputStream.write(getString(R.string.doneSeparator).getBytes());
                 outputStream.write(item.isDone() ? getString(R.string.done).getBytes() : getString(R.string.todo).getBytes());

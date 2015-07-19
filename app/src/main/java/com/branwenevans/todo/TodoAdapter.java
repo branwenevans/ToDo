@@ -8,6 +8,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
@@ -26,7 +28,6 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
             }
         }
     }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -53,21 +54,16 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
     public void toggleShowCompletedTasks() {
         showCompletedTasks = !showCompletedTasks;
 
-        int doneCount = doneItems.size();
-        if (doneCount > 0) {
+        if (doneItems.size() > 0) {
             if (showCompletedTasks) {
                 dataSet.addAll(doneItems);
-                notifyItemRangeInserted(dataSet.size() - doneCount, dataSet.size() - 1);
+                notifyItemRangeInserted(dataSet.size() - doneItems.size(), dataSet.size() - 1);
             } else {
-                ArrayList<Integer> removedPositions = new ArrayList<>();
                 for (ListItem doneItem : doneItems) {
-                    removedPositions.add(dataSet.indexOf(doneItem));
+                    int index = dataSet.indexOf(doneItem);
+                    dataSet.remove(index);
+                    notifyItemRemoved(index);
                 }
-                dataSet.removeAll(doneItems);
-                for (Integer removedItem : removedPositions) {
-                    notifyItemRemoved(removedItem);
-                }
-
             }
         }
     }
@@ -86,6 +82,17 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
     public void taskDeleted(int position) {
         doneItems.remove(dataSet.remove(position));
         notifyItemRemoved(position);
+    }
+
+    public void addItem(ListItem listItem) {
+        dataSet.add(listItem);
+        notifyItemInserted(dataSet.size() - 1);
+    }
+
+    public Collection<ListItem> getAllItems() {
+        LinkedHashSet<ListItem> allItems = new LinkedHashSet<ListItem>(dataSet);
+        allItems.addAll(doneItems);
+        return allItems;
     }
 
 
