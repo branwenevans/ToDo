@@ -9,4 +9,5 @@
     <string name="done">Done</string>
     <string name="todo">ToDo</string>
     <string name="doneSeparator">-</string>
+    <string name="title_action_hide_done">Hide completed tasks</string>
 </resources>

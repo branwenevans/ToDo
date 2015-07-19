@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.io.BufferedReader;
@@ -23,7 +26,7 @@ public class ListActivity extends Activity {
 
     private RecyclerView recyclerView;
 
-    private ArrayList<ListItem> dataset;
+    private ArrayList<ListItem> dataSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +36,8 @@ public class ListActivity extends Activity {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        dataset = readFromFile();
-        adapter = new TodoAdapter(dataset);
+        dataSet = readFromFile();
+        adapter = new TodoAdapter(dataSet);
         recyclerView.setAdapter(adapter);
     }
 
@@ -44,7 +47,7 @@ public class ListActivity extends Activity {
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             String newLabel = data.getStringExtra(AddActivity.EXTRA_ADDED_ITEM);
             if (!newLabel.isEmpty()) {
-                dataset.add(new ListItem(newLabel));
+                dataSet.add(new ListItem(newLabel));
                 adapter.notifyDataSetChanged();
             }
         }
@@ -57,6 +60,29 @@ public class ListActivity extends Activity {
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_list_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_hide_done:
+                toggleShowCompletedTasks();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void toggleShowCompletedTasks() {
+        adapter.toggleShowCompletedTasks();
+    }
+
     public void addItem(View view) {
         Intent addItemIntent = new Intent(this, AddActivity.class);
         startActivityForResult(addItemIntent, REQUEST_CODE);
@@ -64,23 +90,18 @@ public class ListActivity extends Activity {
 
 
     public void taskDone(View view) {
-        int position = recyclerView.getChildPosition((View) view.getParent());
-        ListItem listItem = dataset.get(position);
-        listItem.done();
-        adapter.notifyItemChanged(position);
+        adapter.taskDone(recyclerView.getChildPosition((View) view.getParent()));
     }
 
     public void taskDeleted(View view) {
-        int position = recyclerView.getChildPosition((View) view.getParent());
-        dataset.remove(position);
-        adapter.notifyDataSetChanged();
+        adapter.taskDeleted(recyclerView.getChildPosition((View) view.getParent()));
     }
 
     private void writeToFile() {
         FileOutputStream outputStream;
         try {
             outputStream = openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE);
-            for (ListItem item : dataset) {
+            for (ListItem item : dataSet) {
                 outputStream.write(item.getLabel().getBytes());
                 outputStream.write(getString(R.string.doneSeparator).getBytes());
                 outputStream.write(item.isDone() ? getString(R.string.done).getBytes() : getString(R.string.todo).getBytes());
@@ -101,10 +122,10 @@ public class ListActivity extends Activity {
 
             while ((line = bufferedReader.readLine()) != null) {
                 int separator = line.lastIndexOf(getString(R.string.doneSeparator));
-                String done = line.substring(separator+1);
-                lines.add(new ListItem(line.substring(0, separator-1), getString(R.string.done).equals(done)));
+                String done = line.substring(separator + 1);
+                lines.add(new ListItem(line.substring(0, separator), getString(R.string.done).equals(done)));
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             //TODO: handle
         }
         return lines;
